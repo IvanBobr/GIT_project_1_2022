@@ -1,5 +1,6 @@
+import design
+
 def main():
-    print('My first git program')
 
 
 if __name__ == '__main__':
