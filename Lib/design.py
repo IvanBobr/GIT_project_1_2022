@@ -6,7 +6,7 @@ from datetime import datetime
 import docx
 
 
-class Example(QWidget):
+class WINDOW_IZM(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -28,6 +28,7 @@ class Example(QWidget):
         self.button_goMain = QPushButton(self)
         self.button_goMain.setText("На главную")
         self.button_goMain.setGeometry(620, 10, 161, 28)
+        self.button_goMain.clicked.connect(lambda x: self.run("_0_"))
 
         self.label_time = QLabel(self)
         self.label_time.setText(datetime.now().strftime("%H:%M"))
@@ -37,7 +38,58 @@ class Example(QWidget):
         push_buttons(self)
 
     def run(self, key_sort):
-        self.textBrowse.setText(read_from_word_doc(key_sort))
+        if key_sort != "_0_":
+            self.label_time.setText(datetime.now().strftime("%H:%M"))
+            self.textBrowse.setText(read_from_word_doc(key_sort))
+        else:
+            ex = WINDOW_MAIN()
+            ex.show()
+            self.close()
+
+class WINDOW_MAIN(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        self.orient_left = True
+
+    def initUI(self):
+        self.setGeometry(0, 0, 784, 308)
+        self.setWindowTitle('ГЛАВНАЯ')
+
+        self.title = QLabel(self)
+        self.title.setText("ГЛАВНАЯ")
+        self.title.setFont(QFont("Franklin Gothic Demi", 36))
+        self.title.setGeometry(10, 10, 251, 51)
+
+        self.label_time = QLabel(self)
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        self.label_time.setGeometry(620, 0, 161, 61)
+        self.label_time.setFont(QFont("Stencil", 36))
+
+        self.button_RASP = QPushButton(self)
+        self.button_RASP.setText("РАСПИСАНИЕ")
+        self.button_RASP.setFont(QFont("Segoe Print", 20))
+        self.button_RASP.setGeometry(110, 80, 571, 41)
+        self.button_RASP.clicked.connect(lambda x: self.run(1))
+
+        self.button_IZM = QPushButton(self)
+        self.button_IZM.setText("ИЗМЕНЕНИЯ В РАСПИСАНИИ")
+        self.button_IZM.setFont(QFont("Segoe Print", 20))
+        self.button_IZM.setGeometry(110, 140, 571, 41)
+        self.button_IZM.clicked.connect(lambda x: self.run(2))
+
+        self.button_NOTES = QPushButton(self)
+        self.button_NOTES.setText("ЗАМЕТКИ")
+        self.button_NOTES.setFont(QFont("Segoe Print", 20))
+        self.button_NOTES.setGeometry(110, 200, 571, 41)
+        self.button_NOTES.clicked.connect(lambda x: self.run(3))
+
+    def run(self, key_what):
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        if key_what == 2:
+            ex = WINDOW_IZM()
+            ex.show()
+            self.close()
 
 
 def push_buttons(self):
@@ -116,6 +168,6 @@ def read_from_word_doc(key_sort, name="IZM.docx"):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
+    ex = WINDOW_MAIN()
     ex.show()
     sys.exit(app.exec())
