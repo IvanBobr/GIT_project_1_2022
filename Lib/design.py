@@ -1,9 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
-from PyQt5.QtWidgets import QLabel, QLineEdit, QTextBrowser
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox
+from PyQt5.QtWidgets import QLabel, QLineEdit, QTextBrowser, QTextEdit, QInputDialog
 from PyQt5.QtGui import QFont
 from datetime import datetime
 import docx
+import sqlite3
 
 
 class WINDOW_IZM(QWidget):
@@ -45,6 +46,7 @@ class WINDOW_IZM(QWidget):
             ex = WINDOW_MAIN()
             ex.show()
             self.close()
+
 
 class WINDOW_MAIN(QWidget):
     def __init__(self):
@@ -90,6 +92,70 @@ class WINDOW_MAIN(QWidget):
             ex = WINDOW_IZM()
             ex.show()
             self.close()
+        elif key_what == 3:
+            ex = WINDOW_ZAM()
+            ex.show()
+            self.close()
+
+
+class WINDOW_ZAM(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        self.orient_left = True
+
+    def initUI(self):
+        self.setGeometry(0, 0, 784, 854)
+        self.setWindowTitle("ЗАМЕТКИ")
+
+        self.title = QLabel(self)
+        self.title.setText("ЗАМЕТКИ")
+        self.title.setFont(QFont("Franklin Gothic Demi", 36))
+        self.title.setGeometry(10, 10, 261, 51)
+
+        self.label_time = QLabel(self)
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        self.label_time.setGeometry(620, 0, 161, 61)
+        self.label_time.setFont(QFont("Stencil", 36))
+
+        self.inputPlace = QTextEdit(self)
+        self.inputPlace.setGeometry(10, 110, 321, 681)
+
+        self.outputPlace = QTextBrowser(self)
+        self.outputPlace.setGeometry(340, 80, 431, 711)
+
+        self.open = QPushButton(self)
+        self.open.setText("ОТКРЫТЬ")
+        self.open.setGeometry(10, 80, 93, 28)
+        self.open.clicked.connect(lambda x: self.run("open"))
+
+        self.create = QPushButton(self)
+        self.create.setText("СОЗДАТЬ")
+        self.create.setGeometry(122, 80, 101, 28)
+        self.create.clicked.connect(lambda x: self.run("create new"))
+
+        self.save = QPushButton(self)
+        self.save.setText("СОХРАНИТЬ")
+        self.save.setGeometry(240, 80, 93, 28)
+        self.save.clicked.connect(lambda x: self.run("save"))
+
+    def run(self, key):
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        if key == "create new":
+            self.inputPlace.setText("")
+            self.outputPlace.setText("")
+        elif key == "save":
+            name, ok_pressed = QInputDialog.getText(self, "Сохранение...",
+                                                    "Введите название")
+            if ok_pressed:
+                con = sqlite3.connect("zametki.db")
+                cur = con.cursor()
+
+                wht_add = self.inputPlace.toPlainText()
+                time_added = datetime.now().strftime("%D %H:%M")
+                cur.execute(f"""INSERT INTO main VALUES ('{name}', '{time_added}', '{wht_add}')""").fetchall()
+                con.commit()
+                con.close()
 
 
 def push_buttons(self):
@@ -168,6 +234,6 @@ def read_from_word_doc(key_sort, name="IZM.docx"):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = WINDOW_MAIN()
+    ex = WINDOW_ZAM()
     ex.show()
     sys.exit(app.exec())
