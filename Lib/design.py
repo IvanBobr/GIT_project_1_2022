@@ -5,6 +5,7 @@ from PyQt5.QtGui import QFont
 from datetime import datetime
 import docx
 import sqlite3
+from PyQt5.QtCore import Qt
 
 
 class WINDOW_IZM(QWidget):
@@ -88,7 +89,11 @@ class WINDOW_MAIN(QWidget):
 
     def run(self, key_what):
         self.label_time.setText(datetime.now().strftime("%H:%M"))
-        if key_what == 2:
+        if key_what == 1:
+            ex = WINDOW_RASP1()
+            ex.show()
+            self.close()
+        elif key_what == 2:
             ex = WINDOW_IZM()
             ex.show()
             self.close()
@@ -96,6 +101,13 @@ class WINDOW_MAIN(QWidget):
             ex = WINDOW_ZAM()
             ex.show()
             self.close()
+
+    def keyPressEvent(self, event):
+        if int(event.modifiers()) == (Qt.AltModifier + Qt.ShiftModifier):
+            if event.key() == Qt.Key_Q:
+                ex = WINDOW_COMMANDS()
+                ex.show()
+                self.close()
 
 
 class WINDOW_ZAM(QWidget):
@@ -118,26 +130,36 @@ class WINDOW_ZAM(QWidget):
         self.label_time.setGeometry(620, 0, 161, 61)
         self.label_time.setFont(QFont("Stencil", 36))
 
+        self.go_main = QPushButton(self)
+        self.go_main.setText("На главную")
+        self.go_main.setGeometry(620, 60, 151, 28)
+        self.go_main.clicked.connect(lambda x: self.run("main"))
+
         self.inputPlace = QTextEdit(self)
         self.inputPlace.setGeometry(10, 110, 321, 681)
 
         self.outputPlace = QTextBrowser(self)
-        self.outputPlace.setGeometry(340, 80, 431, 711)
+        self.outputPlace.setGeometry(340, 90, 431, 701)
 
         self.open = QPushButton(self)
         self.open.setText("ОТКРЫТЬ")
-        self.open.setGeometry(10, 80, 93, 28)
+        self.open.setGeometry(10, 80, 81, 28)
         self.open.clicked.connect(lambda x: self.run("open"))
 
         self.create = QPushButton(self)
         self.create.setText("СОЗДАТЬ")
-        self.create.setGeometry(122, 80, 101, 28)
+        self.create.setGeometry(90, 80, 81, 28)
         self.create.clicked.connect(lambda x: self.run("create new"))
 
         self.save = QPushButton(self)
         self.save.setText("СОХРАНИТЬ")
-        self.save.setGeometry(240, 80, 93, 28)
+        self.save.setGeometry(170, 80, 81, 28)
         self.save.clicked.connect(lambda x: self.run("save"))
+
+        self.delete = QPushButton(self)
+        self.delete.setText("УДАЛИТЬ")
+        self.delete.setGeometry(250, 80, 81, 28)
+        self.delete.clicked.connect(lambda x: self.run("delete"))
 
     def run(self, key):
         self.label_time.setText(datetime.now().strftime("%H:%M"))
@@ -156,7 +178,150 @@ class WINDOW_ZAM(QWidget):
                 cur.execute(f"""INSERT INTO main VALUES ('{name}', '{time_added}', '{wht_add}')""").fetchall()
                 con.commit()
                 con.close()
+        elif key == "open":
+            name, ok_pressed = QInputDialog.getText(self, "Открываем...", "Введите название")
+            # self.inputPlace.setText("") НУЖНО ЛИ???
+            if ok_pressed:
+                con = sqlite3.connect("zametki.db")
+                cur = con.cursor()
 
+                textResult = cur.execute(f"""SELECT zn from main WHERE name = '{name}'""").fetchall()
+
+                if textResult:
+                    self.outputPlace.setText(textResult[0][0])
+                else:
+                    self.outputPlace.setText("Ничего не найдено :(")
+
+                con.commit()
+                con.close()
+        elif key == "delete":
+            name, ok_pressed = QInputDialog.getText(self, "Удаляем...", "Введите название")
+            if ok_pressed:
+                con = sqlite3.connect("zametki.db")
+                cur = con.cursor()
+
+                cur.execute(f"""DELETE from main WHERE name = '{name}'""").fetchall()
+                con.commit()
+                con.close()
+        elif key == "main":
+            ex = WINDOW_MAIN()
+            ex.show()
+            self.close()
+
+
+class WINDOW_RASP1(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        self.orient_left = True
+
+    def initUI(self):
+        self.setGeometry(0, 0, 784, 367)
+        self.setWindowTitle('РАСПИСАНИЕ')
+
+        self.title = QLabel(self)
+        self.title.setText("РАСПИСАНИЕ")
+        self.title.setFont(QFont("Franklin Gothic Demi", 36))
+        self.title.setGeometry(10, 10, 371, 51)
+
+        self.label_time = QLabel(self)
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        self.label_time.setGeometry(620, 0, 161, 61)
+        self.label_time.setFont(QFont("Stencil", 36))
+
+        self.button_RASP = QPushButton(self)
+        self.button_RASP.setText("ОТКРЫТЬ ПОЛНОЕ")
+        self.button_RASP.setFont(QFont("Segoe Print", 20))
+        self.button_RASP.setGeometry(30, 80, 721, 41)
+        self.button_RASP.clicked.connect(lambda x: self.run(1))
+
+        self.button_IZM = QPushButton(self)
+        self.button_IZM.setText("ОТКРЫТЬ ПО КЛАССАМ")
+        self.button_IZM.setFont(QFont("Segoe Print", 20))
+        self.button_IZM.setGeometry(30, 140, 721, 41)
+        self.button_IZM.clicked.connect(lambda x: self.run(2))
+
+        self.button_NOTES = QPushButton(self)
+        self.button_NOTES.setText("ОТКРЫТЬ ВМЕСТЕ С ИЗМЕНЕНИЯМИ")
+        self.button_NOTES.setFont(QFont("Segoe Print", 20))
+        self.button_NOTES.setGeometry(30, 200, 721, 41)
+        self.button_NOTES.clicked.connect(lambda x: self.run(3))
+
+        self.button_goMain = QPushButton(self)
+        self.button_goMain.setText("НА ГЛАВНУЮ")
+        self.button_goMain.setFont(QFont("Segoe Print", 20))
+        self.button_goMain.setGeometry(30, 260, 721, 41)
+        self.button_goMain.clicked.connect(lambda x: self.run("main"))
+
+    def run(self, key_what):
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        if key_what == "main":
+            ex = WINDOW_MAIN()
+            ex.show()
+            self.close()
+        elif key_what == 1:
+            pass  # тут будет класс с изм
+        elif key_what == 2:
+            pass  # тут будет класс с изм
+        elif key_what == 3:
+            pass  # тут будет класс с изм
+
+class WINDOW_RASPmain(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        self.orient_left = True
+
+    def initUI(self):
+        self.setGeometry(0, 0, 784, 367)
+        self.setWindowTitle('РАСПИСАНИЕ')
+
+        self.title = QLabel(self)
+        self.title.setText("РАСПИСАНИЕ")
+        self.title.setFont(QFont("Franklin Gothic Demi", 36))
+        self.title.setGeometry(10, 10, 371, 51)
+
+        self.label_time = QLabel(self)
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        self.label_time.setGeometry(620, 0, 161, 61)
+        self.label_time.setFont(QFont("Stencil", 36))
+
+        self.button_RASP = QPushButton(self)
+        self.button_RASP.setText("ОТКРЫТЬ ПОЛНОЕ")
+        self.button_RASP.setFont(QFont("Segoe Print", 20))
+        self.button_RASP.setGeometry(30, 80, 721, 41)
+        self.button_RASP.clicked.connect(lambda x: self.run(1))
+
+        self.button_IZM = QPushButton(self)
+        self.button_IZM.setText("ОТКРЫТЬ ПО КЛАССАМ")
+        self.button_IZM.setFont(QFont("Segoe Print", 20))
+        self.button_IZM.setGeometry(30, 140, 721, 41)
+        self.button_IZM.clicked.connect(lambda x: self.run(2))
+
+        self.button_NOTES = QPushButton(self)
+        self.button_NOTES.setText("ОТКРЫТЬ ВМЕСТЕ С ИЗМЕНЕНИЯМИ")
+        self.button_NOTES.setFont(QFont("Segoe Print", 20))
+        self.button_NOTES.setGeometry(30, 200, 721, 41)
+        self.button_NOTES.clicked.connect(lambda x: self.run(3))
+
+        self.button_goMain = QPushButton(self)
+        self.button_goMain.setText("НА ГЛАВНУЮ")
+        self.button_goMain.setFont(QFont("Segoe Print", 20))
+        self.button_goMain.setGeometry(30, 260, 721, 41)
+        self.button_goMain.clicked.connect(lambda x: self.run("main"))
+
+    def run(self, key_what):
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        if key_what == "main":
+            ex = WINDOW_MAIN()
+            ex.show()
+            self.close()
+        elif key_what == 1:
+            pass  # тут будет класс с изм
+        elif key_what == 2:
+            pass  # тут будет класс с изм
+        elif key_what == 3:
+            pass  # тут будет класс с изм
 
 def push_buttons(self):
     self.button_1 = QPushButton(self)
@@ -219,6 +384,36 @@ def push_buttons(self):
     self.button_10.clicked.connect(lambda x: self.run("10-"))
     self.button_11.clicked.connect(lambda x: self.run("11-"))
 
+class WINDOW_COMMANDS(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        self.orient_left = True
+
+    def initUI(self):
+        self.setGeometry(0, 0, 547, 832)
+        self.setWindowTitle('КОМАНДНАЯ СТРОКА')
+
+        self.command_input = QTextEdit(self)
+        self.command_input.setGeometry(10, 10, 521, 761)
+
+        self.button_send = QPushButton(self)
+        self.button_send.setText("ОТПРАВИТЬ")
+        self.button_send.setGeometry(430, 730, 93, 31)
+        self.button_send.clicked.connect(self.run)
+    def run(self):
+        command = self.command_input.toPlainText()
+        if command == "back":
+            ex = WINDOW_MAIN()
+            ex.show()
+            self.close()
+        else:
+            con = sqlite3.connect("zametki.db")
+            cur = con.cursor()
+
+            cur.execute(command).fetchall()
+            con.commit()
+            con.close()
 
 def read_from_word_doc(key_sort, name="IZM.docx"):
     document = docx.Document(name)
@@ -232,8 +427,9 @@ def read_from_word_doc(key_sort, name="IZM.docx"):
     return string_return
 
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = WINDOW_ZAM()
+    ex = WINDOW_MAIN()
     ex.show()
     sys.exit(app.exec())
