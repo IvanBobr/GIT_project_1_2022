@@ -424,7 +424,10 @@ def read_from_word_doc(key_sort, name="IZM.docx"):
             new_string = for_new_str[0] + " " + for_new_str[1] + "  " + for_new_str[2] + "   " + " ".join(
                 for_new_str[3:])
             string_return += new_string + "\n\n"
-    return string_return
+    if string_return:
+        return string_return
+    else:
+        return "\n\n\n\n\n\n\n\n\n\n\t\t        ИЗМЕНЕНИЙ НЕТ! =)"
 
 
 
