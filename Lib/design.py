@@ -1,5 +1,7 @@
+import csv
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox
+import pandas as pd
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox, QMessageBox
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextBrowser, QTextEdit, QInputDialog
 from PyQt5.QtGui import QFont
 from datetime import datetime
@@ -262,66 +264,29 @@ class WINDOW_RASP1(QWidget):
         elif key_what == 1:
             pass  # тут будет класс с изм
         elif key_what == 2:
-            pass  # тут будет класс с изм
+            ok_pressed = True
+            bool_next = False
+            while bool_next != True:
+                name, ok_pressed = QInputDialog.getText(self, "Выбор класса", "Введите свой класс типа 9-9")
+                if ok_pressed:
+                    if "-" in name and len(name) >= 3:
+                        self.search_countOfClass = name.split("-")[0]
+                        self.search_numberOfClass = name.split("-")[1]
+                        if not (1 <= int(self.search_countOfClass) <= 11) or not (
+                                5 <= int(self.search_numberOfClass) <= 11):
+                            SHOW_ERROR_WARNING("WARNING, ERROR:\n(wrong text input)")
+                            bool_next = False
+                        else:
+                            bool_next = True
+                    else:
+                        SHOW_ERROR_WARNING("WARNING, ERROR:\n(wrong text input)")
+                        bool_next = False
+                else:
+                    bool_next = True
+            # сюда необходимо вставить открытия расписания только с нужным классом!!!
         elif key_what == 3:
             pass  # тут будет класс с изм
 
-class WINDOW_RASPmain(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-        self.orient_left = True
-
-    def initUI(self):
-        self.setGeometry(0, 0, 784, 367)
-        self.setWindowTitle('РАСПИСАНИЕ')
-
-        self.title = QLabel(self)
-        self.title.setText("РАСПИСАНИЕ")
-        self.title.setFont(QFont("Franklin Gothic Demi", 36))
-        self.title.setGeometry(10, 10, 371, 51)
-
-        self.label_time = QLabel(self)
-        self.label_time.setText(datetime.now().strftime("%H:%M"))
-        self.label_time.setGeometry(620, 0, 161, 61)
-        self.label_time.setFont(QFont("Stencil", 36))
-
-        self.button_RASP = QPushButton(self)
-        self.button_RASP.setText("ОТКРЫТЬ ПОЛНОЕ")
-        self.button_RASP.setFont(QFont("Segoe Print", 20))
-        self.button_RASP.setGeometry(30, 80, 721, 41)
-        self.button_RASP.clicked.connect(lambda x: self.run(1))
-
-        self.button_IZM = QPushButton(self)
-        self.button_IZM.setText("ОТКРЫТЬ ПО КЛАССАМ")
-        self.button_IZM.setFont(QFont("Segoe Print", 20))
-        self.button_IZM.setGeometry(30, 140, 721, 41)
-        self.button_IZM.clicked.connect(lambda x: self.run(2))
-
-        self.button_NOTES = QPushButton(self)
-        self.button_NOTES.setText("ОТКРЫТЬ ВМЕСТЕ С ИЗМЕНЕНИЯМИ")
-        self.button_NOTES.setFont(QFont("Segoe Print", 20))
-        self.button_NOTES.setGeometry(30, 200, 721, 41)
-        self.button_NOTES.clicked.connect(lambda x: self.run(3))
-
-        self.button_goMain = QPushButton(self)
-        self.button_goMain.setText("НА ГЛАВНУЮ")
-        self.button_goMain.setFont(QFont("Segoe Print", 20))
-        self.button_goMain.setGeometry(30, 260, 721, 41)
-        self.button_goMain.clicked.connect(lambda x: self.run("main"))
-
-    def run(self, key_what):
-        self.label_time.setText(datetime.now().strftime("%H:%M"))
-        if key_what == "main":
-            ex = WINDOW_MAIN()
-            ex.show()
-            self.close()
-        elif key_what == 1:
-            pass  # тут будет класс с изм
-        elif key_what == 2:
-            pass  # тут будет класс с изм
-        elif key_what == 3:
-            pass  # тут будет класс с изм
 
 def push_buttons(self):
     self.button_1 = QPushButton(self)
@@ -384,6 +349,7 @@ def push_buttons(self):
     self.button_10.clicked.connect(lambda x: self.run("10-"))
     self.button_11.clicked.connect(lambda x: self.run("11-"))
 
+
 class WINDOW_COMMANDS(QWidget):
     def __init__(self):
         super().__init__()
@@ -401,6 +367,7 @@ class WINDOW_COMMANDS(QWidget):
         self.button_send.setText("ОТПРАВИТЬ")
         self.button_send.setGeometry(430, 730, 93, 31)
         self.button_send.clicked.connect(self.run)
+
     def run(self):
         command = self.command_input.toPlainText()
         if command == "back":
@@ -414,6 +381,7 @@ class WINDOW_COMMANDS(QWidget):
             cur.execute(command).fetchall()
             con.commit()
             con.close()
+
 
 def read_from_word_doc(key_sort, name="IZM.docx"):
     document = docx.Document(name)
@@ -430,9 +398,72 @@ def read_from_word_doc(key_sort, name="IZM.docx"):
         return "\n\n\n\n\n\n\n\n\n\n\t\t        ИЗМЕНЕНИЙ НЕТ! =)"
 
 
+def SHOW_ERROR_WARNING(text_output):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Warning)
+
+    # setting message for Message Box
+    msg.setText(text_output)
+
+    # setting Message box window title
+    msg.setWindowTitle("Warning MessageBox")
+
+    # declaring buttons on Message Box
+    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+    # start the app
+    retval = msg.exec_()
+
+
+def SHOW_QUESTION_WARNING(text_output):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Question)
+
+    # setting message for Message Box
+    msg.setText(text_output)
+
+    # setting Message box window title
+    msg.setWindowTitle("Question MessageBox")
+
+    # declaring buttons on Message Box
+    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+    # start the app
+    retval = msg.exec_()
+
+
+def SHOW_INFO_WARNING(text_output):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+
+    # setting message for Message Box
+    msg.setText(text_output)
+
+    # setting Message box window title
+    msg.setWindowTitle("Information MessageBox")
+
+    # declaring buttons on Message Box
+    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+    # start the app
+    retval = msg.exec_()
+
+
+def sort_CSV(key):
+    with open('sorted_RASP.csv', 'w', newline='', encoding="utf8") as csvfile:
+        writer = csv.writer(
+            csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for i in range(10):
+            writer.writerow([i, i ** 2, "Квадрат числа %d равен %d" % (i, i ** 2)])
+
+def readFromExcel(name, wht_cols):
+    cols = wht_cols #cols - список колонок начиная с 0
+    top_players = pd.read_excel(name, usecols=cols)
+    print(type(top_players.head()))
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = WINDOW_MAIN()
-    ex.show()
-    sys.exit(app.exec())
+    # app = QApplication(sys.argv)
+    # ex = WINDOW_MAIN()
+    # ex.show()
+    # sys.exit(app.exec())
+    readFromExcel("excTableMain.xls", [0, 1, 2])
