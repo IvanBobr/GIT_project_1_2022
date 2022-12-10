@@ -1,3 +1,4 @@
+import xlsxreader
 import csv
 import sys
 import pandas as pd
@@ -262,7 +263,9 @@ class WINDOW_RASP1(QWidget):
             ex.show()
             self.close()
         elif key_what == 1:
-            pass  # тут будет класс с изм
+            # тут будет класс с изм
+            SHOW_ERROR_WARNING("Произошли технические шоколадки\nданная страница находится на тех. перерыве",
+                               "ОШИБКА ОТКРЫТИЯ ОКНА")
         elif key_what == 2:
             ok_pressed = True
             bool_next = False
@@ -274,7 +277,7 @@ class WINDOW_RASP1(QWidget):
                         self.search_numberOfClass = name.split("-")[1]
                         if not (1 <= int(self.search_countOfClass) <= 11) or not (
                                 5 <= int(self.search_numberOfClass) <= 11):
-                            SHOW_ERROR_WARNING("WARNING, ERROR:\n(wrong text input)")
+                            SHOW_ERROR_WARNING("WARNING, ERROR:\n(wrong text input)", "ОШИБКА ВВОДА")
                             bool_next = False
                         else:
                             bool_next = True
@@ -284,8 +287,13 @@ class WINDOW_RASP1(QWidget):
                 else:
                     bool_next = True
             # сюда необходимо вставить открытия расписания только с нужным классом!!!
+            if bool_next:
+                SHOW_ERROR_WARNING("Произошли технические шоколадки\nданная страница находится на тех. перерыве",
+                                   "ОШИБКА ОТКРЫТИЯ ОКНА")
         elif key_what == 3:
-            pass  # тут будет класс с изм
+            # тут будет класс с изм
+            SHOW_ERROR_WARNING("Произошли технические шоколадки\nданная страница находится на тех. перерыве",
+                               "ОШИБКА ОТКРЫТИЯ ОКНА")
 
 
 def push_buttons(self):
@@ -398,7 +406,7 @@ def read_from_word_doc(key_sort, name="IZM.docx"):
         return "\n\n\n\n\n\n\n\n\n\n\t\t        ИЗМЕНЕНИЙ НЕТ! =)"
 
 
-def SHOW_ERROR_WARNING(text_output):
+def SHOW_ERROR_WARNING(text_output, name):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Warning)
 
@@ -406,7 +414,7 @@ def SHOW_ERROR_WARNING(text_output):
     msg.setText(text_output)
 
     # setting Message box window title
-    msg.setWindowTitle("Warning MessageBox")
+    msg.setWindowTitle(name)
 
     # declaring buttons on Message Box
     msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
@@ -450,20 +458,23 @@ def SHOW_INFO_WARNING(text_output):
 
 
 def sort_CSV(key):
-    with open('sorted_RASP.csv', 'w', newline='', encoding="utf8") as csvfile:
-        writer = csv.writer(
-            csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        for i in range(10):
-            writer.writerow([i, i ** 2, "Квадрат числа %d равен %d" % (i, i ** 2)])
+    # with open('sorted_RASP.csv', 'w', newline='', encoding="utf8") as csvfile:
+    #     writer = csv.writer(
+    #         csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    #     for i in range(10):
+    #         writer.writerow([i, i ** 2, "Квадрат числа %d равен %d" % (i, i ** 2)])
+    pass
+
 
 def readFromExcel(name, wht_cols):
-    cols = wht_cols #cols - список колонок начиная с 0
-    top_players = pd.read_excel(name, usecols=cols)
-    print(type(top_players.head()))
+    pass
+
+
+# ДОДЕЛАТЬ ДВЕ ФУНКЦИИ С РАБОТОЙ С ТАБЛИЦОЙ РАСП
 
 if __name__ == '__main__':
-    # app = QApplication(sys.argv)
-    # ex = WINDOW_MAIN()
-    # ex.show()
-    # sys.exit(app.exec())
-    readFromExcel("excTableMain.xls", [0, 1, 2])
+    app = QApplication(sys.argv)
+    ex = WINDOW_MAIN()
+    ex.show()
+    sys.exit(app.exec())
+    # readFromExcel("excTableMain.xls", [0, 1, 2])
