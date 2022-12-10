@@ -1,0 +1,7 @@
+import xlsxreader
+import csv
+import sys
+import pandas as pd
+import docx
+import sqlite3
+import PyQt5.QtGui
