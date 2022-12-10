@@ -1,7 +1,7 @@
-import xlsxreader
-import csv
+import xlsxreader - для чтения экселя
+import csv - работа с таблицами
 import sys
-import pandas as pd
-import docx
-import sqlite3
-import PyQt5.QtGui
+import pandas as pd - чтение экселя
+import docx - чтение ворда, работа с .docx
+import sqlite3 - базы данных
+import PyQt5.QtGui - дизайн, кнопки и т.п.
