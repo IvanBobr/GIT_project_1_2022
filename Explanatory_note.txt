@@ -1,0 +1,3 @@
+This project was created so that the user can organize his time, see the change and schedule of lessons
+
+Made by Ivan Bobrinev 9-9
