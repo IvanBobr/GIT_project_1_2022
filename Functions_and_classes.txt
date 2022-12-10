@@ -1,0 +1,13 @@
+class WINDOW_IZM(QWidget)
+class WINDOW_MAIN(QWidget)
+class WINDOW_ZAM(QWidget)
+class WINDOW_RASP1(QWidget)
+class WINDOW_COMMANDS(QWidget)
+
+def push_buttons(self)
+def read_from_word_doc(key_sort, name="IZM.docx")
+def SHOW_ERROR_WARNING(text_output, name)
+def SHOW_QUESTION_WARNING(text_output)
+def SHOW_INFO_WARNING(text_output)
+def sort_CSV(key)
+def readFromExcel(name, wht_cols)
