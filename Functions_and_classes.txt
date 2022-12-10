@@ -1,13 +1,13 @@
-class WINDOW_IZM(QWidget)
-class WINDOW_MAIN(QWidget)
+class WINDOW_IZM(QWidget) - окно с изменениями
+class WINDOW_MAIN(QWidget) - главное окно
 class WINDOW_ZAM(QWidget)
-class WINDOW_RASP1(QWidget)
-class WINDOW_COMMANDS(QWidget)
+class WINDOW_RASP1(QWidget) - окно с расписанием, вводные кнопки
+class WINDOW_COMMANDS(QWidget) - окно для отладки
 
-def push_buttons(self)
-def read_from_word_doc(key_sort, name="IZM.docx")
-def SHOW_ERROR_WARNING(text_output, name)
-def SHOW_QUESTION_WARNING(text_output)
-def SHOW_INFO_WARNING(text_output)
-def sort_CSV(key)
-def readFromExcel(name, wht_cols)
+def push_buttons(self) - функция с созданием кнопок
+def read_from_word_doc(key_sort, name="IZM.docx") - чтение ворд-документа
+def SHOW_ERROR_WARNING(text_output, name) - окно-оповещение
+def SHOW_QUESTION_WARNING(text_output) - окно-оповещение
+def SHOW_INFO_WARNING(text_output) - окно-оповещение
+def sort_CSV(key) - сортировка данных для табоицы csv
+def readFromExcel(name, wht_cols) - чтение экселя
