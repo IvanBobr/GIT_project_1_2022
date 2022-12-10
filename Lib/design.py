@@ -2,13 +2,13 @@ import xlsxreader
 import csv
 import sys
 import pandas as pd
+import docx
+import sqlite3
+import PyQt5.QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox, QMessageBox
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextBrowser, QTextEdit, QInputDialog
 from PyQt5.QtGui import QFont
-import PyQt5.QtGui
 from datetime import datetime
-import docx
-import sqlite3
 from PyQt5.QtCore import Qt
 
 
@@ -91,7 +91,8 @@ class WINDOW_MAIN(QWidget):
         self.button_NOTES.setGeometry(110, 200, 571, 41)
         self.button_NOTES.clicked.connect(lambda x: self.run(3))
 
-        self.button_NOTES.setStyleSheet('QPushButton {font: 75 14pt "Microsoft YaHei UI"; font-weight: bold; color: rgb(255, 255, 255); background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(61, 217, 245), stop:1 rgb(240, 53, 218)); border-style: solid; border-radius:21px;}')
+        self.button_NOTES.setStyleSheet(
+            'QPushButton {font: 75 14pt "Microsoft YaHei UI"; font-weight: bold; color: rgb(255, 255, 255); background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(61, 217, 245), stop:1 rgb(240, 53, 218)); border-style: solid; border-radius:21px;}')
         self.button_IZM.setStyleSheet('''QPushButton {
             font: 75 14pt "Microsoft YaHei UI";
             font-weight: bold;
