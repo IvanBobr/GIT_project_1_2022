@@ -1,16 +1,20 @@
-import xlsxreader
 import csv
 import sys
 import pandas as pd
 import docx
 import sqlite3
 import PyQt5.QtGui
+import openpyxl
+from openpyxl import Workbook
+from openpyxl import load_workbook
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox, QMessageBox
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextBrowser, QTextEdit, QInputDialog
 from PyQt5.QtGui import QFont
 from datetime import datetime
 from PyQt5.QtCore import Qt
 
+letters = "ABCDEFGHIGKLMNOPQRSTUVWXYZ"
+combinations = ["", "A", "B", "C"]
 
 class WINDOW_IZM(QWidget):
     def __init__(self):
@@ -19,7 +23,7 @@ class WINDOW_IZM(QWidget):
         self.orient_left = True
 
     def initUI(self):
-        self.setGeometry(0, 0, 784, 850)
+        self.setGeometry(0, 0, 784*2, 850*2)
         self.setWindowTitle('Изменения в расписании')
 
         self.main_title = QLabel(self)
@@ -60,35 +64,35 @@ class WINDOW_MAIN(QWidget):
         self.orient_left = True
 
     def initUI(self):
-        self.setGeometry(0, 0, 784, 308)
+        self.setGeometry(200, 200, 784*2, 308*2)
         self.setWindowTitle('ГЛАВНАЯ')
 
         self.title = QLabel(self)
         self.title.setText("ГЛАВНАЯ")
         self.title.setFont(QFont("Franklin Gothic Demi", 36))
-        self.title.setGeometry(10, 10, 251, 51)
+        self.title.setGeometry(10*2, 10*2, 251*2, 51*2)
 
         self.label_time = QLabel(self)
         self.label_time.setText(datetime.now().strftime("%H:%M"))
-        self.label_time.setGeometry(620, 0, 161, 61)
+        self.label_time.setGeometry(695*2, 0, 161*2, 61*2)
         self.label_time.setFont(QFont("Stencil", 36))
 
         self.button_RASP = QPushButton(self)
         self.button_RASP.setText("РАСПИСАНИЕ")
         self.button_RASP.setFont(QFont("Segoe Print", 20))
-        self.button_RASP.setGeometry(110, 80, 571, 41)
+        self.button_RASP.setGeometry(110*2, 80*2, 571*2, 41*2)
         self.button_RASP.clicked.connect(lambda x: self.run(1))
 
         self.button_IZM = QPushButton(self)
         self.button_IZM.setText("ИЗМЕНЕНИЯ В РАСПИСАНИИ")
         self.button_IZM.setFont(QFont("Segoe Print", 20))
-        self.button_IZM.setGeometry(110, 140, 571, 41)
+        self.button_IZM.setGeometry(110*2, 140*2, 571*2, 41*2)
         self.button_IZM.clicked.connect(lambda x: self.run(2))
 
         self.button_NOTES = QPushButton(self)
         self.button_NOTES.setText("ЗАМЕТКИ")
         self.button_NOTES.setFont(QFont("Segoe Print", 20))
-        self.button_NOTES.setGeometry(110, 200, 571, 41)
+        self.button_NOTES.setGeometry(110*2, 200*2, 571*2, 41*2)
         self.button_NOTES.clicked.connect(lambda x: self.run(3))
 
         self.button_NOTES.setStyleSheet(
@@ -138,7 +142,7 @@ class WINDOW_ZAM(QWidget):
         self.orient_left = True
 
     def initUI(self):
-        self.setGeometry(0, 0, 784, 854)
+        self.setGeometry(200, 100, 784, 854)
         self.setWindowTitle("ЗАМЕТКИ")
 
         self.title = QLabel(self)
@@ -228,6 +232,16 @@ class WINDOW_ZAM(QWidget):
             ex = WINDOW_MAIN()
             ex.show()
             self.close()
+
+    # def set_Style(self, name):
+    #     k = self.{name}
+    #     k.setStyleSheet('''QPushButton {
+    #                         font: 75 14pt "Microsoft YaHei UI";
+    #                         font-weight: bold;
+    #                         color: rgb(255, 255, 255);
+    #                         background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(61, 217, 245), stop:1 rgb(240, 53, 218));
+    #                         border-style: solid;
+    #                         border-radius:21px;}''')
 
 
 class WINDOW_RASP1(QWidget):
@@ -437,6 +451,45 @@ class WINDOW_COMMANDS(QWidget):
             con.commit()
             con.close()
 
+class WINDOW_IZM(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        self.orient_left = True
+
+    def initUI(self):
+        self.setGeometry(0, 0, 784, 850)
+        self.setWindowTitle('Изменения в расписании')
+
+        self.main_title = QLabel(self)
+        self.main_title.setText("ИЗМЕНЕНИЯ В РАСПИСАНИИ")
+        self.main_title.setGeometry(10, 10, 401, 20)
+        self.main_title.setFont(QFont("Franklin Gothic Demi", 18))
+
+        self.textBrowse = QTextBrowser(self)
+        self.textBrowse.setGeometry(180, 41, 601, 751)
+        self.textBrowse.setFont(QFont("Franklin Gothic Demi", 14))
+
+        self.button_goMain = QPushButton(self)
+        self.button_goMain.setText("На главную")
+        self.button_goMain.setGeometry(620, 10, 161, 28)
+        self.button_goMain.clicked.connect(lambda x: self.run("_0_"))
+
+        self.label_time = QLabel(self)
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        self.label_time.setGeometry(10, 730, 161, 61)
+        self.label_time.setFont(QFont("Stencil", 36))
+
+        push_buttons(self)
+
+    def run(self, key_sort):
+        if key_sort != "_0_":
+            self.label_time.setText(datetime.now().strftime("%H:%M"))
+            self.textBrowse.setText(read_from_word_doc(key_sort))
+        else:
+            ex = WINDOW_MAIN()
+            ex.show()
+            self.close()
 
 def read_from_word_doc(key_sort, name="IZM.docx"):
     document = docx.Document(name)
@@ -504,19 +557,37 @@ def SHOW_INFO_WARNING(text_output):
     retval = msg.exec_()
 
 
-def sort_CSV(key):
-    # with open('sorted_RASP.csv', 'w', newline='', encoding="utf8") as csvfile:
-    #     writer = csv.writer(
-    #         csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    #     for i in range(10):
-    #         writer.writerow([i, i ** 2, "Квадрат числа %d равен %d" % (i, i ** 2)])
+def sort_CSV(key, colons):
+    with open('sorted_RASP.csv', 'w', newline='', encoding="utf8") as csvfile:
+        writer = csv.writer(
+            csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for i in range(10):
+            writer.writerow([i, i ** 2, "Квадрат числа %d равен %d" % (i, i ** 2)])
     pass
-
 
 def readFromExcel(name, wht_cols):
-    pass
 
+    problem_colons = {
+        "Y" : ["Z", "AA"],
+        "Z" : ["AA", "AB"],
+        "AY" : ["AZ", "BA"],
+        "AZ" : ["BA", "BB"],
+        "BY" : ["BZ", "CA"],
+        "BZ" : ["CA", "CB"]
+    }
 
+    wb = Workbook()
+    wb = load_workbook(filename = 'c:\games\excTableMain.xlsx')
+    sheet_ranges = wb['21A12']
+    sp_cols = []
+    for j in combinations:
+        for i in letters:
+            if sheet_ranges[f'{j}{i}1'].value in wht_cols:
+                if f'{j}{i}' not in problem_colons.keys():
+                    sp_cols.append([f'{j}{i}', f'{j}{letters[letters.index(i) + 1]}', f'{j}{letters[letters.index(i) + 2]}'])
+                else:
+                    sp_cols.append([f'{j}{i}', problem_colons[f'{j}{i}'][0], problem_colons[f'{j}{i}'][1]])
+    return sp_cols
 # ДОДЕЛАТЬ ДВЕ ФУНКЦИИ С РАБОТОЙ С ТАБЛИЦОЙ РАСП
 
 if __name__ == '__main__':
@@ -524,4 +595,4 @@ if __name__ == '__main__':
     ex = WINDOW_MAIN()
     ex.show()
     sys.exit(app.exec())
-    # readFromExcel("excTableMain.xls", [0, 1, 2])
+    #print(readFromExcel("excTableMain.xlsx", ["5-5", "6-7", "8-8"]))
