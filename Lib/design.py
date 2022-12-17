@@ -7,14 +7,18 @@ import PyQt5.QtGui
 import openpyxl
 from openpyxl import Workbook
 from openpyxl import load_workbook
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox, QMessageBox
-from PyQt5.QtWidgets import QLabel, QLineEdit, QTextBrowser, QTextEdit, QInputDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox, QMessageBox, QTableWidgetItem
+from PyQt5.QtWidgets import QLabel, QLineEdit, QTextBrowser, QTextEdit, QInputDialog, QTabWidget, QTableWidget
 from PyQt5.QtGui import QFont
 from datetime import datetime
 from PyQt5.QtCore import Qt
+from PyQt5 import uic
+
+# surgut@kiber-one.com
 
 letters = "ABCDEFGHIGKLMNOPQRSTUVWXYZ"
 combinations = ["", "A", "B", "C"]
+
 
 class WINDOW_IZM(QWidget):
     def __init__(self):
@@ -23,7 +27,7 @@ class WINDOW_IZM(QWidget):
         self.orient_left = True
 
     def initUI(self):
-        self.setGeometry(0, 0, 784*2, 850*2)
+        self.setGeometry(200, 200, 784 * 2, 850 * 2)
         self.setWindowTitle('Изменения в расписании')
 
         self.main_title = QLabel(self)
@@ -64,35 +68,35 @@ class WINDOW_MAIN(QWidget):
         self.orient_left = True
 
     def initUI(self):
-        self.setGeometry(200, 200, 784*2, 308*2)
+        self.setGeometry(200, 200, 784 * 2, 308 * 2)
         self.setWindowTitle('ГЛАВНАЯ')
 
         self.title = QLabel(self)
         self.title.setText("ГЛАВНАЯ")
         self.title.setFont(QFont("Franklin Gothic Demi", 36))
-        self.title.setGeometry(10*2, 10*2, 251*2, 51*2)
+        self.title.setGeometry(10 * 2, 10 * 2, 251 * 2, 51 * 2)
 
         self.label_time = QLabel(self)
         self.label_time.setText(datetime.now().strftime("%H:%M"))
-        self.label_time.setGeometry(695*2, 0, 161*2, 61*2)
+        self.label_time.setGeometry(695 * 2, 0, 161 * 2, 61 * 2)
         self.label_time.setFont(QFont("Stencil", 36))
 
         self.button_RASP = QPushButton(self)
         self.button_RASP.setText("РАСПИСАНИЕ")
         self.button_RASP.setFont(QFont("Segoe Print", 20))
-        self.button_RASP.setGeometry(110*2, 80*2, 571*2, 41*2)
+        self.button_RASP.setGeometry(110 * 2, 80 * 2, 571 * 2, 41 * 2)
         self.button_RASP.clicked.connect(lambda x: self.run(1))
 
         self.button_IZM = QPushButton(self)
         self.button_IZM.setText("ИЗМЕНЕНИЯ В РАСПИСАНИИ")
         self.button_IZM.setFont(QFont("Segoe Print", 20))
-        self.button_IZM.setGeometry(110*2, 140*2, 571*2, 41*2)
+        self.button_IZM.setGeometry(110 * 2, 140 * 2, 571 * 2, 41 * 2)
         self.button_IZM.clicked.connect(lambda x: self.run(2))
 
         self.button_NOTES = QPushButton(self)
         self.button_NOTES.setText("ЗАМЕТКИ")
         self.button_NOTES.setFont(QFont("Segoe Print", 20))
-        self.button_NOTES.setGeometry(110*2, 200*2, 571*2, 41*2)
+        self.button_NOTES.setGeometry(110 * 2, 200 * 2, 571 * 2, 41 * 2)
         self.button_NOTES.clicked.connect(lambda x: self.run(3))
 
         self.button_NOTES.setStyleSheet(
@@ -144,6 +148,7 @@ class WINDOW_ZAM(QWidget):
     def initUI(self):
         self.setGeometry(200, 100, 784, 854)
         self.setWindowTitle("ЗАМЕТКИ")
+        self.setStyleSheet('''''')
 
         self.title = QLabel(self)
         self.title.setText("ЗАМЕТКИ")
@@ -349,12 +354,29 @@ class WINDOW_RASP1(QWidget):
                     bool_next = True
             # сюда необходимо вставить открытия расписания только с нужным классом!!!
             if bool_next:
-                SHOW_ERROR_WARNING("Произошли технические шоколадки\nданная страница находится на тех. перерыве",
-                                   "ОШИБКА ОТКРЫТИЯ ОКНА")
+                # SHOW_ERROR_WARNING("Произошли технические шоколадки\nданная страница находится на тех. перерыве",
+                #                   "ОШИБКА ОТКРЫТИЯ ОКНА")
+                ex = WINDOW_RASP()
+                ex.show()
+                self.close()
         elif key_what == 3:
-            # тут будет класс с изм
-            SHOW_ERROR_WARNING("Произошли технические шоколадки\nданная страница находится на тех. перерыве",
-                               "ОШИБКА ОТКРЫТИЯ ОКНА")
+            ex = WINDOW_RASP()
+            ex.show()
+            self.close()
+            # SHOW_ERROR_WARNING("Произошли технические шоколадки\nданная страница находится на тех. перерыве",
+            #                    "ОШИБКА ОТКРЫТИЯ ОКНА")
+
+
+class WINDOW_RASP(QWidget):
+    def __init__(self):
+        super().__init__()
+
+    def run(self, key_what):
+        self.label_time.setText(datetime.now().strftime("%H:%M"))
+        if key_what == "main":
+            ex = WINDOW_MAIN()
+            ex.show()
+            self.close()
 
 
 def push_buttons(self):
@@ -451,6 +473,7 @@ class WINDOW_COMMANDS(QWidget):
             con.commit()
             con.close()
 
+
 class WINDOW_IZM(QWidget):
     def __init__(self):
         super().__init__()
@@ -490,6 +513,7 @@ class WINDOW_IZM(QWidget):
             ex = WINDOW_MAIN()
             ex.show()
             self.close()
+
 
 def read_from_word_doc(key_sort, name="IZM.docx"):
     document = docx.Document(name)
@@ -565,34 +589,51 @@ def sort_CSV(key, colons):
             writer.writerow([i, i ** 2, "Квадрат числа %d равен %d" % (i, i ** 2)])
     pass
 
-def readFromExcel(name, wht_cols):
 
+def readFromExcel(name, wht_cols):
     problem_colons = {
-        "Y" : ["Z", "AA"],
-        "Z" : ["AA", "AB"],
-        "AY" : ["AZ", "BA"],
-        "AZ" : ["BA", "BB"],
-        "BY" : ["BZ", "CA"],
-        "BZ" : ["CA", "CB"]
+        "Y": ["Z", "AA"],
+        "Z": ["AA", "AB"],
+        "AY": ["AZ", "BA"],
+        "AZ": ["BA", "BB"],
+        "BY": ["BZ", "CA"],
+        "BZ": ["CA", "CB"]
     }
 
     wb = Workbook()
-    wb = load_workbook(filename = 'c:\games\excTableMain.xlsx')
+    wb = load_workbook(filename='c:\games\excTableMain.xlsx')
     sheet_ranges = wb['21A12']
     sp_cols = []
     for j in combinations:
         for i in letters:
             if sheet_ranges[f'{j}{i}1'].value in wht_cols:
                 if f'{j}{i}' not in problem_colons.keys():
-                    sp_cols.append([f'{j}{i}', f'{j}{letters[letters.index(i) + 1]}', f'{j}{letters[letters.index(i) + 2]}'])
+                    sp_cols.append(
+                        [f'{j}{i}', f'{j}{letters[letters.index(i) + 1]}', f'{j}{letters[letters.index(i) + 2]}'])
                 else:
                     sp_cols.append([f'{j}{i}', problem_colons[f'{j}{i}'][0], problem_colons[f'{j}{i}'][1]])
+
+    con = sqlite3.connect("zametki.db")
+    cur = con.cursor()
+    cur.execute("""delete from rasp""")
+    cur.execute("""INSERT INTO rasp VALUES ('d', '№', 'Класс', 'каб', 'каб')""")
+    print(sp_cols)
+    for colons in sp_cols:
+        for i in range(1, 42):
+            if sheet_ranges[f'{colons[0]}{i}'].value:
+                cur.execute(
+                    f"INSERT INTO rasp VALUES ('{sheet_ranges[f'A{i}'].value}', '{sheet_ranges[f'B{i}'].value}', '{sheet_ranges[f'{colons[0]}{i}'].value}', '{sheet_ranges[f'{colons[1]}{i}'].value}', '{sheet_ranges[f'{colons[2]}{i}'].value}')")
+    con.commit()
+    con.close()
     return sp_cols
+
+
 # ДОДЕЛАТЬ ДВЕ ФУНКЦИИ С РАБОТОЙ С ТАБЛИЦОЙ РАСП
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = WINDOW_MAIN()
+    ex = WINDOW_RASP()
     ex.show()
     sys.exit(app.exec())
-    #print(readFromExcel("excTableMain.xlsx", ["5-5", "6-7", "8-8"]))
+    # readFromExcel("excTableMain.xlcx", ["5-8", "6-9", "7-7"])
+    # print(readFromExcel("excTableMain.xlsx", ["5-5", "6-7", "8-8"]))
